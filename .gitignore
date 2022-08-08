@@ -115,4 +115,4 @@ dkms.conf
 .vscode/*.code-snippets
 
 # Ignore code-workspaces
-*.code-workspace
+*.code-workspace.DS_Store
