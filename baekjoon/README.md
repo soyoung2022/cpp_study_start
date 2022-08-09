@@ -6,7 +6,7 @@
 
 --- 
 
-## 15552번 (15552.cpp) - 입출력에서 실행 속도 높이기 
+## ✏️ 15552번 (15552.cpp) - 입출력에서 실행 속도 높이기 
 ### ios_base::sync_with_stdio(false);
 ✔️ 장점
 > ios_base::sync_with_stdio는 C의 stdio와 C++의 iostream을 동기화하는 역할을 한다. 이때, stdio와 iostream의 buffer를 모두 사용하기 때문에, 시간적 딜레이가 발생한다. 따라서 이를 false로 동기화를 비활성화시키면, 독립적인 buffer를 사용하게 되어 실행 속도가 빨라진다.
