@@ -491,6 +491,105 @@ int main(void) {
 return *this;
 ```
 
+## ✏️ Chapter 05
+### 복사 생성자
+```c++
+#include <iostream>
+using namespace std;
+
+class SoSimple
+{
+    int num1;
+    int num2;
+public:
+    // 생성자 
+    SoSimple(int n1, int n2)
+    :num1(n1), num2(n2)
+    {
+    }
+    // 복사 생성자 
+    SoSimple(const SoSimple & copy)
+    :num1(copy.num1), num2(copy.num2)
+    {
+        cout<<"Called SoSimple(SoSimple & copy)\n";
+    }
+};
+
+int main(void) {
+    SoSimple sim1(10, 20);
+    cout<<"생성 및 초기화 직전\n";
+    SoSimple sim2 = sim1; // SoSimple sim2(sim1)
+    cout<<"생성 및 초기화 직후\n";
+
+    return 0;
+}
+```
+- 복사 생성자의 매개변수에서 const는 필수가 아니다. 
+
+    👉🏻 그냥 원본을 변형하지 않게 하기 위함이다. 
+- 복사 생성자의 매개변수로 참조형을 작성하는 것은 필수다. 
+- SoSimple sim2 = sim1;은 묵시적 변환으로 SoSimple sim2(sim1);로 바뀌어 복사 생성자가 호출된다. 
+
+    👉🏻 이를 막고 싶다면, explicit 키워드를 사용하자!
+
+### explicit
+> 복사 생성자의 묵시적 호출을 허용하지 않게 만드는 키워드가 explicit이다. 뿐만 아니라, 이 키워드를 사용해 생성자의 묵시적 호출도 허용하지 않을 수 있다. 
+
+```c++
+    explicit SoSimple(const SoSimple & copy) // 묵시적 변환 안 됨
+    :num1(copy.num1), num2(copy.num2)
+    {
+        cout<<"Called SoSimple(SoSimple & copy)\n";
+    }
+```
+👉🏻 대입 연산자를 통한 복사 연산자의 묵시적 호출이 불가능해진다. 
+
+```c++
+class A{
+    int num;
+public:
+    explicit A(int n):num(n) { } // 생성자
+}
+```
+👉🏻 main 함수에서 객체 생성시 
+- A obj1 = 3; → (X)
+- A obj2(3); → (O)
+
+### 디폴트 복사 생성자(default copy constructor)
+> 복사 생성자를 생성하지 않으면, 멤버 대 멤버의 복사를 진행하는 디폴트 복사 생성자가 자동으로 삽입된다. 
+
+### 얕은 복사(shallow copy)
+> 디폴트 복사 생성자에서 멤버 대 멤버의 복사가 진행되는데, 여기서의 복사가 얕은 복사다. 하지만, 얕은 복사는 생성자에서 메모리 공간 할당이 이루어질 때, 즉, 멤버 변수가 포인터이고 그 멤버 변수가 생성자에서 초기화될 때 문제가 발생한다. 
+
+👉🏻 따라서 생성자에서 메모리 공간 동적 할당이 이루어질 때는 깊은 복사를 하는 복사 생성자를 직접 작성해야 한다.  
+
+### 깊은 복사(deep copy)
+> 아래와 같은 복사 생성자는 동적 할당을 하는 name, company, phone_number를 멤버 이니셜라이저로 초기화하지 않고 새로운 메모리 공간을 동적으로 할당 받아 멤버 변수 포인터가 copy와 같은 곳을 가리키도록 하지 않는다. 
+
+```c++
+NameCard(const NameCard &copy):pos(copy.pos) // 깊은 복사를 하는 복사 생성자
+    {
+        name = new char[strlen(copy.name)+1];
+        strcpy(name, copy.name);
+        company = new char[strlen(copy.company)+1];
+        strcpy(company, copy.company);
+        phone_number = new char[strlen(copy.phone_number)+1];
+        strcpy(phone_number, copy.phone_number);
+    }
+```
+
+### 복사 생성자가 호출되는 시점
+1. 기존에 생성된 객체를 이용해서 새로운 객체를 초기화하는 경우
+2. Call-by-value 방식의 함수호출 과정에서 객체를 인자로 전달하는 경우 
+3. 객체를 반환하되, 참조형으로 반환하지 않는 경우 
+
+    👉🏻 함수의 반환 값이 객체일 때, 반환되는 객체는 "임시 객체"이다. 
+
+### 임시객체
+> 함수의 반환 값이 객체일 때, 그 객체는 메모리 특정 영역에 저장되고, 그 공간에 대한 참조 값이 반환된다. 
+
+- 임시객체는 다음 행으로 넘어가면 바로 소멸된다. 
+- 참조자에 참조되는 임시객체는 바로 소멸되지 않는다. 
 
 ---
 
