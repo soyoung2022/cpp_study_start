@@ -491,6 +491,8 @@ int main(void) {
 return *this;
 ```
 
+---
+
 ## ✏️ Chapter 05
 ### 복사 생성자
 ```c++
@@ -590,6 +592,110 @@ NameCard(const NameCard &copy):pos(copy.pos) // 깊은 복사를 하는 복사 �
 
 - 임시객체는 다음 행으로 넘어가면 바로 소멸된다. 
 - 참조자에 참조되는 임시객체는 바로 소멸되지 않는다. 
+
+---
+
+## ✏️ Chapter 06
+### const
+> 객체에 const 선언을 하면 그 객체의 데이터 변경을 허용하지 않겠다는 의미가 된다. 
+
+- 클래스의 멤버 함수 내에서 멤버 변수 변경이 일어나지 않을 때는 멤버 함수를 const로 선언하면 좋다.
+- const 객체는 const 멤버 함수만 호출할 수 있다. 
+- const 멤버 함수도 오버로딩이 가능하다. 아래 두 함수를 참고하자!
+```c++
+#include <iostream>
+using namespace std;
+
+class Example
+{
+public:
+    void ShowData() const { }
+    void ShowData() { }
+};
+
+int main(void)
+{
+    const Example ex;
+    ex.ShowData() // void ShowData() const { }가 호출됨 
+    return 0;
+}
+```
+
+### friend
+> A 클래스가 B 클래스를 friend로 선언하면 B 클래스는 A 클래스의 private 멤버 변수에 접근할 수 있다. 
+
+```c++
+#include <iostream>
+using namespace std;
+
+class B;
+class A
+{
+    friend class B; // 사용법
+}
+```
+
+- friend 선언은 private이나 public 중 어디서도 할 수 있다. (위치 상관 없음)
+- friend 선언은 필요한 상황에서 소극적으로! 해야 한다. 
+- 함수를 대상으로도 friend를 선언할 수 있다. 그럼 함수에서 해당 클래스의 private 멤버 변수에 접근할 수 있다. 
+
+### static
+- 전역변수에 선언된 static
+
+    👉🏻 선언된 파일 내에서만 참조를 허용하겠다는 의미  
+- 함수 내에 선언된 static
+
+    👉🏻 한번만 초기화하고, 지역변수와 달리 함수를 빠져나가도 소멸되지 않는다. 
+
+- 전역변수와 마찬가지로 static은 초기화하지 않으면 0으로 초기화된다. 
+
+### 클래스 내 static 변수 
+- 초기화는 생성자가 아니라 클래스 외부에서 진행한다. 
+- 선언된 클래스의 모든 객체가 공유한다. (선언된 클래스의 객체에서만 접근 가능하다.)
+- 하지만, static 변수는 클래스의 멤버 변수가 아니다. 
+- public으로 선언 시 클래스 이름을 통해 호출할 수 있다. 
+
+### 클래스 내 static 함수
+> static 멤버함수 내에서는 static 멤버변수와 static 멤버함수만 호출이 가능하다. 
+
+
+### const static 멤버
+> const static으로 선언되는 멤버변수(상수)는 선언과 동시에 초기화가 가능하다. 
+
+### mutable 키워드
+> const 함수 내에서의 값 변경을 예외적으로 허용한다. 
+
+```c++
+#include <iostream>
+using namespace std;
+
+class SoSimple
+{
+    int num1;
+    mutable int num2; // const 함수에 대해 예외를 둔다. 
+public:
+    SoSimple(int n1, int n2) : num1(n1), num2(n2) {}
+    void ShowSimpleData() const
+    {
+        cout<<num1<<", "<<num2<<"\n";
+    }
+    void CopyToNum2() const
+    {
+        num2=num1;
+    }
+};
+
+int main(void)
+{
+    SoSimple s1(1, 2);
+    s1.ShowSimpleData();
+    s1.CopyToNum2();
+    s1.ShowSimpleData();
+    
+    return 0;
+}
+```
+👉🏻 원래 const 함수 내 값의 변경은 안되지만, 예외적으로 허용한다. 이에 따라 가급적이면 사용하지 않는 것이 좋다(const 의미가 사라짐)
 
 ---
 
